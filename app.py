@@ -8,6 +8,7 @@ from langchain_classic.chains import RetrievalQA
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from youtube_transcript_api import YouTubeTranscriptApi, FetchedTranscript
+import os
 
 st.set_page_config(page_title="RAG Bot", page_icon="📚")
 st.title("📚 RAG Chatbot")
@@ -26,8 +27,11 @@ def process_pdf(uploaded_file):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as f:
         f.write(uploaded_file.read())
         tmp_path = f.name
-    loader = PyPDFLoader(tmp_path)
-    return loader.load()
+    try:
+        loader = PyPDFLoader(tmp_path)
+        return loader.load()
+    finally:
+        os.unlink(tmp_path)
 
 def load_youtube(url):
     if "v=" in url:
